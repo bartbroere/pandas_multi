@@ -28,8 +28,8 @@ def read_csvs(filename, **k):
                                       "pandas.concat knows about the "
                                       "argument {kwarg}".format(kwarg=kwarg))
     if os.path.isdir(filename):
-        return pandas.concat(pandas.read_csv(file, **k) for file in
-                             os.listdir(filename))
+        return pandas.concat(pandas.read_csv(os.path.join(filename, file), **k)
+                             for file in os.listdir(filename))
     else:
         return pandas.concat(pandas.read_csv(file, **k) for file in
                              glob(filename))
