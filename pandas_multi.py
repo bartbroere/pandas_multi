@@ -5,11 +5,13 @@ from glob import glob
 import pandas
 
 
-def read_csvs(filename, **k):
+def read_csvs(filename, filenames_as_keys=False, **k):
     """
     Read multiple csv's into a single pandas.DataFrame
 
     :param filename: file path that allows wildcards, or folder path
+    :param filenames_as_keys: add index with original filename to the DataFrame
+                              cannot be used together with the option ``keys``
     :param k: keyword arguments that will be passed to read_csv or concat
     :return: the output of the call to pandas.concat for all files matching
     the filename
@@ -28,8 +30,17 @@ def read_csvs(filename, **k):
                                       "pandas.concat knows about the "
                                       "argument {kwarg}".format(kwarg=kwarg))
     if os.path.isdir(filename):
-        return pandas.concat(pandas.read_csv(os.path.join(filename, file), **k)
-                             for file in os.listdir(filename))
+        dircontents = os.listdir(filename)
+        if filenames_as_keys:
+            concat_kwargs['keys'] = dircontents
+        return pandas.concat([pandas.read_csv(os.path.join(filename, file),
+                                              **k)
+                             for file in dircontents],
+                             **concat_kwargs)
     else:
-        return pandas.concat(pandas.read_csv(file, **k) for file in
-                             glob(filename))
+        if filenames_as_keys:
+            concat_kwargs['keys'] = [os.path.basename(path) for path in
+                                     glob(filename)]
+        return pandas.concat([pandas.read_csv(file, **k) for file in
+                              glob(filename)],
+                             **concat_kwargs)
