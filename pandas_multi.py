@@ -34,13 +34,13 @@ def read_csvs(filename, filenames_as_keys=False, **k):
         if filenames_as_keys:
             concat_kwargs['keys'] = dircontents
         return pandas.concat([pandas.read_csv(os.path.join(filename, file),
-                                              **k)
-                             for file in dircontents],
+                                              **read_csv_kwargs)
+                              for file in dircontents],
                              **concat_kwargs)
     else:
         if filenames_as_keys:
             concat_kwargs['keys'] = [os.path.basename(path) for path in
                                      glob(filename)]
-        return pandas.concat([pandas.read_csv(file, **k) for file in
-                              glob(filename)],
+        return pandas.concat([pandas.read_csv(file, **read_csv_kwargs)
+                              for file in glob(filename)],
                              **concat_kwargs)
