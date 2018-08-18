@@ -29,6 +29,10 @@ df = pandas_multi.readcsvs('./data/')
 df = pandas_multi.readcsvs('./data/*.csv')
 ```
 
+All options that are available to ``pandas.read_csv`` or ``pandas.concat`` 
+can be passed into ``pandas_multi.readcsvs`` and will be redirected to the 
+appropriate underlying functions.
+
 If you wish to maintain a trace back to the original data, you can run the 
 function with the keyword argument ``filenames_as_keys=True``. Note that you
 should no longer use the keyword argument ``keys``. This will be ignored.
