@@ -1,6 +1,6 @@
 from setuptools import setup
 
-with open('README.md', 'r') as readme:
+with open('README.rst', 'r') as readme:
     readme = "".join(readme.readlines())
 
 with open('requirements.in', 'r') as requirements:
@@ -10,7 +10,7 @@ with open('requirements.in', 'r') as requirements:
 
 setup(
     name='pandas_multi',
-    version='2018.8.19',
+    version='2018.8.20',
     url='https://github.com/bartbroere/pandas_multi/',
     author='Bart Broere',
     author_email='mail@bartbroere.eu',
