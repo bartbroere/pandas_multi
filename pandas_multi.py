@@ -1,5 +1,6 @@
 import inspect
 import os
+import warnings
 from glob import glob
 
 import pandas
@@ -47,5 +48,7 @@ def read_csvs(filename, filenames_as_keys=False, **k):
             try:
                 dfs.append(pandas.read_csv(file, **read_csv_kwargs))
             except EmptyDataError:
+                warnings.warn('Reading ' + file + ' raised an EmptyDataError.' +
+                              'Continuing without its contents.')
                 continue
         return pandas.concat(dfs, **concat_kwargs)
