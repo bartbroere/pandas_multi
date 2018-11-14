@@ -38,9 +38,15 @@ def read_csvs(filename, filenames_as_keys=False, **k):
                               for file in dircontents],
                              **concat_kwargs)
     else:
-        if filenames_as_keys:
+                if filenames_as_keys:
             concat_kwargs['keys'] = [os.path.basename(path) for path in
                                      glob(filename)]
-        return pandas.concat([pandas.read_csv(file, **read_csv_kwargs)
-                              for file in glob(filename)],
-                             **concat_kwargs)
+        dfs = []
+        for file in glob(filename):
+            try:
+                dfs.append(pandas.read_csv(file, **read_csv_kwargs))
+                print("Succeeded", file)
+            except EmptyDataError:
+                continue
+        return pandas.concat(dfs, **concat_kwargs)
+    
