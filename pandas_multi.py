@@ -51,4 +51,13 @@ def read_csvs(filename, filenames_as_keys=False, **k):
                 warnings.warn('Reading ' + file + ' raised an EmptyDataError.' +
                               'Continuing without its contents.')
                 continue
-        return pandas.concat(dfs, **concat_kwargs)
+        try:
+            return pandas.concat(dfs, **concat_kwargs)
+        except ValueError as e:
+            if str(e) == 'No objects to concatenate':
+                warnings.warn('No files matched the specified path, or '
+                              'matching files have been skipped for other '
+                              'reasons (e.g. EmptyDataError).')
+                return pandas.DataFrame()
+            else:
+                raise
