@@ -7,10 +7,11 @@ import pandas
 from pandas.errors import EmptyDataError
 
 
-def read_csvs(filename, filenames_as_keys=False, **k):
+def read_multiple_files(reader, filename, filenames_as_keys=False, **k):
     """
     Read multiple csv's into a single pandas.DataFrame
 
+    :param reader: the original pandas reader function
     :param filename: file path that allows wildcards, or folder path
     :param filenames_as_keys: add index with original filename to the DataFrame
                               cannot be used together with the option ``keys``
@@ -18,7 +19,7 @@ def read_csvs(filename, filenames_as_keys=False, **k):
     :return: the output of the call to pandas.concat for all files matching
     the filename
     """
-    read_csv_args = inspect.signature(pandas.read_csv).parameters.keys()
+    read_csv_args = inspect.signature(reader).parameters.keys()
     concat_args = inspect.signature(pandas.concat).parameters.keys()
     read_csv_kwargs = {}
     concat_kwargs = {}
@@ -28,9 +29,11 @@ def read_csvs(filename, filenames_as_keys=False, **k):
         elif kwarg in concat_args:
             concat_kwargs[kwarg] = value
         else:
-            raise NotImplementedError("Neither pandas.read_csv nor "
+            raise NotImplementedError("Neither {readername} nor "
                                       "pandas.concat knows about the "
-                                      "argument {kwarg}".format(kwarg=kwarg))
+                                      "argument {kwarg}".format(
+                readername=reader.__name__,
+                kwarg=kwarg))
     if os.path.isdir(filename):
         dircontents = os.listdir(filename)
         if filenames_as_keys:
@@ -61,3 +64,10 @@ def read_csvs(filename, filenames_as_keys=False, **k):
                 return pandas.DataFrame()
             else:
                 raise
+
+
+def read_csvs(filename, filenames_as_keys=False, **k):
+    return read_multiple_files(pandas.read_csv,
+                               filename,
+                               filenames_as_keys=filenames_as_keys,
+                               **k)
