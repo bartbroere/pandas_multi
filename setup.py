@@ -10,7 +10,7 @@ with open('requirements.in', 'r') as requirements:
 
 setup(
     name='pandas_multi',
-    version='2018.11.14',
+    version='2018.11.15',
     url='https://github.com/bartbroere/pandas_multi/',
     author='Bart Broere',
     author_email='mail@bartbroere.eu',
@@ -27,6 +27,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Utilities',
     )
 )
