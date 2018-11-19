@@ -10,13 +10,13 @@ with open('requirements.in', 'r') as requirements:
 
 setup(
     name='pandas_multi',
-    version='2018.11.15',
+    version='2018.11.19',
     url='https://github.com/bartbroere/pandas_multi/',
     author='Bart Broere',
     author_email='mail@bartbroere.eu',
     license='MIT License',
-    description="Read multiple csvs as a single pandas DataFrame.",
-    keywords='pandas readcsv readcsvs csv dataframe multiple multi',
+    description="Read multiple csvs or Excel files as a single pandas DataFrame.",
+    keywords='pandas readcsv readcsvs csv xls xlsx excel dataframe multiple multi',
     long_description=readme,
     py_modules=['pandas_multi'],
     install_requires=dependencies,

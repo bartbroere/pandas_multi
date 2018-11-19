@@ -87,3 +87,20 @@ def read_csvs(filename, filenames_as_keys=False, **k):
                                filename,
                                filenames_as_keys=filenames_as_keys,
                                **k)
+
+def read_excels(filename, filenames_as_keys=False, **k):
+    """
+    Read multiple excel files, or all files in a folder into a single
+    pandas.DataFrame.
+
+    :param filename: file path that allows wildcards, or folder path
+    :param filenames_as_keys: add index with original filename to the DataFrame
+                              cannot be used together with the option ``keys``
+    :param k: keyword arguments that will be passed to the reader or concat
+    :return: the output of the call to pandas.concat for all files matching
+             the filename
+    """
+    return read_multiple_files(pandas.read_excel,
+                               filename,
+                               filenames_as_keys=filenames_as_keys,
+                               **k)
