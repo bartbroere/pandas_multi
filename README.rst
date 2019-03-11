@@ -20,14 +20,14 @@ Usage of ``pandas_multi.read_csvs`` has been kept as similar as possible to
     # <sarcasm>
     #   Note that dataframes only work if you give them the non-descriptive name df
     # </sarcasm>
-    df = pandas_multi.readcsvs('./20180728*.csv')
+    df = pandas_multi.read_csvs('./20180728*.csv')
     # if you provide it with a path to a folder and nothing else, it will assume
     # everything in the folder is a comma-separated file
-    df = pandas_multi.readcsvs('./data/')
+    df = pandas_multi.read_csvs('./data/')
     # if this is not the case, do this:
-    df = pandas_multi.readcsvs('./data/*.csv')
+    df = pandas_multi.read_csvs('./data/*.csv')
 All options that are available to ``pandas.read_csv`` or ``pandas.concat`` 
-can be passed into ``pandas_multi.readcsvs`` and will be redirected to the 
+can be passed into ``pandas_multi.read_csvs`` and will be redirected to the 
 appropriate underlying functions.
 
 If you wish to maintain a trace back to the original data, you can run the 
