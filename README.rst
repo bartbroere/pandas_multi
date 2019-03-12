@@ -33,3 +33,5 @@ appropriate underlying functions.
 If you wish to maintain a trace back to the original data, you can run the 
 function with the keyword argument ``filenames_as_keys=True``. Note that you
 should no longer use the keyword argument ``keys``. This will be ignored.
+
+Please note that the API for concatenation of Excel sheets is not yet stable.
