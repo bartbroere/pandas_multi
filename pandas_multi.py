@@ -1,21 +1,25 @@
 import inspect
 import os
 import warnings
+from collections import defaultdict
 from glob import glob
 
 import pandas
 from pandas.errors import EmptyDataError
 
 
-def read_multiple_files(reader, filename, filenames_as_keys=False, **k):
+def read_multiple_files(reader, io, filenames_as_keys=False,
+                        concat_axis='sheet', sheets_as_keys=False, **k):
     """
     Read multiple files, or all files in a folder into a single
     pandas.DataFrame
 
     :param reader: the original pandas reader function
-    :param filename: file path that allows wildcards, or folder path
+    :param io: file path that allows wildcards, or folder path
     :param filenames_as_keys: add index with original filename to the DataFrame
                               cannot be used together with the option ``keys``
+    :param concat_axis:
+    :param sheets_as_keys:
     :param k: keyword arguments that will be passed to the reader or concat
     :return: the output of the call to pandas.concat for all files matching
              the filename
@@ -38,16 +42,16 @@ def read_multiple_files(reader, filename, filenames_as_keys=False, **k):
                 readername=reader.__name__,
                 kwarg=kwarg))
 
-    if os.path.isdir(filename):
-        filenames = os.listdir(filename)
+    if os.path.isdir(io):
+        filenames = os.listdir(io)
         if filenames_as_keys:
             concat_kwargs['keys'] = filenames
-        filenames = [os.path.join(filename, file) for file in filenames]
+        filenames = [os.path.join(io, file) for file in filenames]
     else:
         if filenames_as_keys:
             concat_kwargs['keys'] = [os.path.basename(path) for path in
-                                     glob(filename)]
-        filenames = glob(filename)
+                                     glob(io)]
+        filenames = glob(io)
 
     for file in filenames:
         try:
@@ -58,7 +62,27 @@ def read_multiple_files(reader, filename, filenames_as_keys=False, **k):
                 file=file,
             ))
             continue
-
+    if concat_axis == 'sheet':
+        sheets_dfs = defaultdict(pandas.DataFrame)
+        for df in dfs:
+            for sheet, data in df.items():
+                if sheets_as_keys:
+                    data['sheet'] = sheet
+                    data = data.set_index('sheet', drop=False)
+                sheets_dfs[sheet].append(data)
+        return sheets_dfs
+    elif concat_axis == 'within_file':
+        sheets = []
+        for df in dfs:
+            for sheet, data in df.items():
+                if sheets_as_keys:
+                    data['sheet'] = sheet
+                    data = data.set_index('sheet', drop=False)
+                sheets.append(data)
+        result = sheets[0]
+        for sheet in sheets[1:]:
+            result = result.append(sheet, sort=False)
+        return result
     try:
         return pandas.concat(dfs, **concat_kwargs)
     except ValueError as e:
@@ -71,12 +95,12 @@ def read_multiple_files(reader, filename, filenames_as_keys=False, **k):
             raise
 
 
-def read_csvs(filename, filenames_as_keys=False, **k):
+def read_csvs(io, filenames_as_keys=False, **k):
     """
     Read multiple csv files, or all files in a folder into a single
     pandas.DataFrame.
 
-    :param filename: file path that allows wildcards, or folder path
+    :param io: file path that allows wildcards, or folder path
     :param filenames_as_keys: add index with original filename to the DataFrame
                               cannot be used together with the option ``keys``
     :param k: keyword arguments that will be passed to the reader or concat
@@ -84,16 +108,17 @@ def read_csvs(filename, filenames_as_keys=False, **k):
              the filename
     """
     return read_multiple_files(pandas.read_csv,
-                               filename,
+                               io,
                                filenames_as_keys=filenames_as_keys,
                                **k)
 
-def read_excels(filename, filenames_as_keys=False, **k):
+
+def read_excels(io, filenames_as_keys=False, **k):
     """
     Read multiple excel files, or all files in a folder into a single
     pandas.DataFrame.
 
-    :param filename: file path that allows wildcards, or folder path
+    :param io: file path that allows wildcards, or folder path
     :param filenames_as_keys: add index with original filename to the DataFrame
                               cannot be used together with the option ``keys``
     :param k: keyword arguments that will be passed to the reader or concat
@@ -101,6 +126,6 @@ def read_excels(filename, filenames_as_keys=False, **k):
              the filename
     """
     return read_multiple_files(pandas.read_excel,
-                               filename,
+                               io,
                                filenames_as_keys=filenames_as_keys,
                                **k)
